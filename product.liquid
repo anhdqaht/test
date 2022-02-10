@@ -22,41 +22,62 @@
 <div class="item grid-item product-item small--one-whole {{ grid_item_width }}{% if sold_out %} sold-out{% endif %}{% if on_sale %} on-sale{% endif %} loader">
   {% comment %} BoostCommerce product item JSON data {% endcomment %}
   <!-- Whislist Button -->
-  <a href="{{ product.url | within: current_collection }}" class="product-grid-item text-center">
+
     <div class="product-grid-image">
       <div class="product-grid-image--centered">
         {% if sold_out %}
         <div class="badge badge--sold-out"><span class="badge-label">{{ 'products.product.sold_out' | t }}</span></div>
         {% endif %}
 
+      {%- if product.featured_media -%}
+        {%- liquid
+          assign featured_media_aspect_ratio = product.featured_media.aspect_ratio
 
-        {% if product.featured_image %}
-        {%- assign image = product.featured_image -%}
-        {%- assign max_width = width | plus: 0 -%}
-        {%- assign max_height = height | plus: 0 -%}
+          if product.featured_media.aspect_ratio == nil
+            assign featured_media_aspect_ratio = 1
+          endif
+        -%}
 
-        {%- include 'image-logic' with  height: max_height -%}
+          <a  href="{{ product.url | default: '#' }}" class="media media--transparent media--adapt media--hover-effect"
+            style="padding-bottom: {{ 1 | divided_by: featured_media_aspect_ratio | times: 100 }}%;"
+          >
+            <img
+              srcset="{%- if product.featured_media.width >= 165 -%}{{ product.featured_media | image_url: width: 165 }} 165w,{%- endif -%}
+                {%- if product.featured_media.width >= 360 -%}{{ product.featured_media | image_url: width: 360 }} 360w,{%- endif -%}
+                {%- if product.featured_media.width >= 533 -%}{{ product.featured_media | image_url: width: 533 }} 533w,{%- endif -%}
+                {%- if product.featured_media.width >= 720 -%}{{ product.featured_media | image_url: width: 720 }} 720w,{%- endif -%}
+                {%- if product.featured_media.width >= 940 -%}{{ product.featured_media | image_url: width: 940 }} 940w,{%- endif -%}
+                {%- if product.featured_media.width >= 1066 -%}{{ product.featured_media | image_url: width: 1066 }} 1066w,{%- endif -%}
+                {{ product.featured_media | image_url: width: 1920 }} {{ product.featured_media.width }}w"
+              src="{{ product.featured_media | image_url: width: 533 }}"
+              sizes="(min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+              alt="{{ product.featured_media.alt | escape }}"
+              loading="lazy"
+              class="motion-reduce"
+              width="{{ product.featured_media.width }}"
+              height="{{ product.featured_media.height }}"
+            >
 
-        {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
-        <div class="lazyload__image-wrapper no-js">
-          <div style="padding-top:100%;">
-            <img style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                 class="lazyload no-js"
-                 data-src="{{ img_url }}"
-                 data-widths="[125, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
-                 data-aspectratio="{{ image.aspect_ratio }}"
-                 data-sizes="auto"
-                 alt="{{ image.alt | escape }}"
-                 {% comment %}style="max-height: {{ height }}px;">{% endcomment %}>
-          </div>
-        </div>
-        <noscript>
-          <img src="{{ image | img_url: '580x' }}"
-               srcset="{{ image | img_url: '580x' }} 1x, {{ image | img_url: '580x', scale: 2 }} 2x"
-               alt="{{ image.alt }}" style="opacity:1;">
-        </noscript>
-
-        {% else %}
+            {%- if product.media[1] != nil and show_secondary_image -%}
+              <img
+                srcset="{%- if product.media[1].width >= 165 -%}{{ product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
+                  {%- if product.media[1].width >= 360 -%}{{ product.media[1] | image_url: width: 360 }} 360w,{%- endif -%}
+                  {%- if product.media[1].width >= 533 -%}{{ product.media[1] | image_url: width: 533 }} 533w,{%- endif -%}
+                  {%- if product.media[1].width >= 720 -%}{{ product.media[1] | image_url: width: 720 }} 720w,{%- endif -%}
+                  {%- if product.media[1].width >= 940 -%}{{ product.media[1] | image_url: width: 940 }} 940w,{%- endif -%}
+                  {%- if product.media[1].width >= 1066 -%}{{ product.media[1] | image_url: width: 1066 }} 1066w,{%- endif -%}
+                  {{ product.media[1] | image_url: width: 1920 }} {{ product.media[1].width }}w"
+                src="{{ product.media[1] | image_url: width: 533 }}"
+                sizes="(min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                alt="{{ product.media[1].alt | escape }}"
+                loading="lazy"
+                class="motion-reduce"
+              width="{{ product.media[1].width }}"
+              height="{{ product.media[1].height }}"
+              >
+            {%- endif -%}
+          </a>
+      {%- else -%}
         {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
         <div>
           {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
@@ -64,7 +85,20 @@
         {% endif %}
       </div>
     </div>
-
+    {%if settings.quickview_ok %}
+    <div class="quick-view-button">
+      <a class="quick-view" data-handle="{{ product.handle }}" href="javascript:void(0);">
+        מבט מהיר
+      </a>
+    </div>
+    {%endif%}
+    {% if on_sale and section.settings.product_show_compare_at_price %}
+  		{% assign percent = product.compare_at_price_max | minus: product.price | times: 100.0 | divided_by: product.compare_at_price_max | money_without_currency | times: 100 | remove: '.0' | append: '%' %}
+		<div class="sale-percent">
+          	<span class="">מבצע</span>
+        	<span class="percent">{{ percent }}</span>
+      	</div>
+    {% endif %}
     <p>{{ product.title }}</p>
 
     <!-- Product Review Section -->
@@ -77,15 +111,9 @@
 
     </div>
       {%endif%} -->
-    {%if settings.quickview_ok %}
-    <div class="quick-view-button">
-      <a class="quick-view" data-handle="{{ product.handle }}" href="javascript:void(0);">
-        מבט מהיר
-      </a>
-    </div>
-    {%endif%}
+
     <div class="product-item--price">
-      <span class="h2" align="{{ settings.align_price }}">
+      <span class="h3" align="{{ settings.align_price }}">
         {% if on_sale %}
         <span class="visually-hidden">{{ "products.general.sale_price" | t }}</span>
         {% else %}
@@ -114,9 +142,7 @@
     {% if section.settings.product_reviews_enable %}
     <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
     {% endif %}
-    
-    
-  </a>
+
   
   
   {%if settings.wishlist_ok %}
@@ -125,6 +151,7 @@
   <input type="hidden" id="{{ product.handle }}" value="{{ product.selected_or_first_available_variant.id }}"/>
   
 </div>
+
 
 
 

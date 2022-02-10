@@ -131,7 +131,85 @@ Sass Helpers
 /*============================================================================
 General Styles
 ==============================================================================*/
+/* component-media */
+img {
+  max-width: 100%;
+  height: auto;
+  border: 0 none;
+}
+.media {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
 
+.media--transparent {
+  background-color: transparent;
+}
+
+.media > *:not(.zoom):not(.deferred-media__poster-button),
+.media model-viewer {
+  display: block;
+  max-width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow:hidden;
+}
+.media.zoom img:hover{
+  cursor: crosshair;
+}
+.media:not(.zoom) > img {
+  object-fit: cover;
+  object-position: center center;
+  transition: .5s;
+}
+
+.media--square {
+  padding-bottom: 100%;
+}
+
+.media--portrait {
+  padding-bottom: 125%;
+}
+
+.media--landscape {
+  padding-bottom: 66.6%;
+}
+
+.media--cropped {
+  padding-bottom: 56%;
+}
+
+.media--16-9 {
+  padding-bottom: 56.25%;
+}
+
+.media--circle {
+  padding-bottom: 100%;
+  border-radius: 50%;
+}
+
+.media.media--hover-effect > img + img {
+  opacity: 0;
+}
+.media.media--hover-effect:hover > img + img{
+  opacity: 1;
+}
+.media:not(.zoom):hover img{
+  transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  -moz-transform: scale(1.2);
+  -o-transform: scale(1.2);
+}
+@media screen and (min-width: 1025px) {
+  .media--cropped {
+    padding-bottom: 63%;
+  }
+}
 
 
 @include at-query ($max, $small) {
@@ -245,7 +323,6 @@ Ajaxify Cart - General
   img {
     display: block;
     margin: 0 auto;
-    max-width: 100%;
   }
 }
 
@@ -2345,9 +2422,6 @@ th, td {
 /*============================================================================
 #Images and Iframes
 ==============================================================================*/
-img {
-  border: 0 none;
-}
 
 svg:not(:root) {
   overflow: hidden;
@@ -6239,8 +6313,6 @@ a.swym-wishlist {display:inline-block; background:url("heart-icon.svg") no-repea
 
 }
 
-img {max-width:100%}
-
 .full_image { position:relative;
   &:after {
     content: "";
@@ -6796,9 +6868,9 @@ body.wishlist{
   }
   }
 }
-.product-item{ position:relative; float:right;
+.product-item{ position:relative; float:right; padding: 0 7.5px;
 
-  .action--wishlist.tile-actions--btn  {position:absolute; top:$gutter/2; right:$gutter; z-index:9; cursor:pointer;
+  .action--wishlist.tile-actions--btn  {position:absolute; top:$gutter/2; left:$gutter; z-index:9; cursor:pointer;
     img{width:25px;}
     .btn--main-blank {display:block}
     &.is-active {
@@ -6807,15 +6879,31 @@ body.wishlist{
 
     }
 
-
-
-
+  }
+  .sale-percent {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: black;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    padding: 7px 0;
+    span {
+      display: block;
+      color: white;
+      font-size: 12px;
+      text-align: center;
+    }
   }
 }
 .template-collection {
+  .grid-uniform.flexy-grid {
+    margin: 0 -7.5px!important;
+  }
   .product-item{
 
-    .action--wishlist.tile-actions--btn{right:$gutter/2}
+    .action--wishlist.tile-actions--btn{left:20px}
   }
 
 }
@@ -7147,7 +7235,7 @@ span.img-text:hover {
     font-weight: bold;
     color: #393939;
     display: block;
-    float: right;
+    margin: 0 auto;
   }
 }
 
